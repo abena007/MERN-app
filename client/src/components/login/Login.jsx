@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import classes from './login.module.css'
 import { useDispatch, useSelector } from 'react-redux'
@@ -17,7 +17,7 @@ const Login = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
-
+  const isAuth = useSelector((state) => state.auth.isAuthenticated)
 
   const handleLogin = async(e) => {
       e.preventDefault()
@@ -41,6 +41,7 @@ const Login = () => {
 
 
         const data = await res.json()
+        console.log(isAuth)
         console.log(data)
         console.log(data.result)
         
@@ -48,13 +49,10 @@ const Login = () => {
         dispatch(login(data)) // {userInfo, token }
        
         setTimeout (() => { 
-          setError(!data.result)
-          if (data.result === true) {
-          navigate('/')
-        
-      }
+          setError(!isAuth)
     }
       , 500)
+      
 
         }
         catch (error) { 
@@ -64,7 +62,16 @@ const Login = () => {
         }, 3000)
       }
   }
-
+  
+useEffect (() => {
+    if (isAuth === true) {
+      setTimeout (() => { 
+        navigate("/");
+  }
+    , 500)
+      
+    }
+  }, [isAuth]);
   
   return (
     <div className={classes.loginContainer}>
